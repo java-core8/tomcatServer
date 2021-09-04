@@ -22,7 +22,7 @@ public class PostRepository {
   }
 
   public Optional<Post> getById(long id) {
-    if(id < postMap.size() - 1 && id >= 0) {
+    if(id < postMap.size()  && id >= 0) {
       return Optional.of(postMap.get((int) id));
     }
     return Optional.empty();
@@ -35,9 +35,28 @@ public class PostRepository {
       post.setId(id);
       postMap.putIfAbsent(id, post);
     } else if(postId > 0) {
+      if(!idIsExists(postId)) {
+        return getStubPost(postId);
+      }
       postMap.replace(postId, post);
     }
     return post;
+  }
+
+  private Post getStubPost(int id) {
+    Post stubPost = new Post();
+    stubPost.setContent("Number of post - " +  id +  " isn't exist");
+    return stubPost;
+  }
+
+  private boolean idIsExists(int id) {
+    for(Map.Entry<Integer, Post> post : postMap.entrySet()) {
+      if(post.getKey() == id) {
+        System.out.println("true");
+        return true;
+      }
+    }
+    return false;
   }
 
   public void removeById(long id) {
