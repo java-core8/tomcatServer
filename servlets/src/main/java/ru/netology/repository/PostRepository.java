@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 // Stub
 public class PostRepository {
-  private static final AtomicInteger idCounter = new AtomicInteger(0);
-  private static final ConcurrentHashMap<Integer, Post> postMap = new ConcurrentHashMap<>();
+  private final AtomicInteger idCounter = new AtomicInteger(0);
+  private final ConcurrentHashMap<Integer, Post> postMap = new ConcurrentHashMap<>();
 
   public List<Post> all() {
 
@@ -22,7 +20,7 @@ public class PostRepository {
   }
 
   public Optional<Post> getById(long id) {
-    if(id < postMap.size()  && id >= 0) {
+    if(id < postMap.size() && id >= 0) {
       return Optional.of(postMap.get((int) id));
     }
     return Optional.empty();
