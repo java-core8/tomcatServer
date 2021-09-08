@@ -1,5 +1,6 @@
 package ru.netology.repository;
 
+import org.springframework.stereotype.Repository;
 import ru.netology.model.Post;
 
 import java.util.ArrayList;
@@ -9,13 +10,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// Stub
+@Repository
 public class PostRepository {
   private final AtomicInteger idCounter = new AtomicInteger(0);
   private final ConcurrentHashMap<Integer, Post> postMap = new ConcurrentHashMap<>();
 
   public List<Post> all() {
-
     return new ArrayList<>(postMap.values());
   }
 
