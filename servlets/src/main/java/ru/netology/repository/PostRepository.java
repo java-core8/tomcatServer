@@ -1,5 +1,6 @@
 package ru.netology.repository;
 
+import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class PostRepository {
     if(id < postMap.size() && id >= 0) {
       if(idIsExistsAndNotRemoved((int) id)) {
         return Optional.of(postMap.get((int) id));
+      } else {
+        throw new NotFoundException();
       }
     }
     return Optional.empty();
@@ -38,6 +41,8 @@ public class PostRepository {
       postMap.putIfAbsent(id, post);
     } else if(postId > 0 && idIsExistsAndNotRemoved(postId)) {
       postMap.replace(postId, post);
+    } else {
+      throw new NotFoundException();
     }
     return post;
   }
