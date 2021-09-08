@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 // Stub
 public class PostRepository {
@@ -15,13 +16,16 @@ public class PostRepository {
   private final ConcurrentHashMap<Integer, Post> postMap = new ConcurrentHashMap<>();
 
   public List<Post> all() {
-
-    return new ArrayList<>(postMap.values());
+    return postMap.values().stream()
+            .filter(post -> !post.isRemoved())
+            .collect(Collectors.toList());
   }
 
   public Optional<Post> getById(long id) {
     if(id < postMap.size() && id >= 0) {
-      return Optional.of(postMap.get((int) id));
+      if(idIsExistsAndNotRemoved((int) id)) {
+        return Optional.of(postMap.get((int) id));
+      }
     }
     return Optional.empty();
   }
@@ -32,25 +36,15 @@ public class PostRepository {
       int id = idCounter.getAndIncrement();
       post.setId(id);
       postMap.putIfAbsent(id, post);
-    } else if(postId > 0) {
-      if(!idIsExists(postId)) {
-        return getStubPost(postId);
-      }
+    } else if(postId > 0 && idIsExistsAndNotRemoved(postId)) {
       postMap.replace(postId, post);
     }
     return post;
   }
 
-  private Post getStubPost(int id) {
-    Post stubPost = new Post();
-    stubPost.setContent("Number of post - " +  id +  " isn't exist");
-    return stubPost;
-  }
-
-  private boolean idIsExists(int id) {
+  private boolean idIsExistsAndNotRemoved(int id) {
     for(Map.Entry<Integer, Post> post : postMap.entrySet()) {
-      if(post.getKey() == id) {
-        System.out.println("true");
+      if(post.getKey() == id && !post.getValue().isRemoved()) {
         return true;
       }
     }
@@ -60,7 +54,7 @@ public class PostRepository {
   public void removeById(long id) {
     for(Map.Entry<Integer, Post> post : postMap.entrySet()) {
       if(post.getKey() == id) {
-        postMap.remove(post.getKey());
+        postMap.get((int) id).removeIt();
       }
     }
   }
